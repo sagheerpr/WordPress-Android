@@ -107,6 +107,7 @@ class MySiteViewModel @Inject constructor(
     private val quickStartCardSource: QuickStartCardSource,
     private val quickStartCardBuilder: QuickStartCardBuilder,
     private val currentAvatarSource: CurrentAvatarSource,
+    private val homePageDataLoader: HomePageDataLoader,
     private val dynamicCardsSource: DynamicCardsSource,
     private val unifiedCommentsListFeatureConfig: UnifiedCommentsListFeatureConfig,
     private val quickStartDynamicCardsFeatureConfig: QuickStartDynamicCardsFeatureConfig,
@@ -677,6 +678,17 @@ class MySiteViewModel @Inject constructor(
     fun handleStoriesPhotoPickerResult(data: Intent) {
         selectedSiteRepository.getSelectedSite()?.let {
             siteStoriesHandler.handleStoriesResult(it, data, STORY_FROM_MY_SITE)
+        }
+    }
+
+    fun checkAndStartLandOnTheEditor() {
+        selectedSiteRepository.getSelectedSite()?.let { selectedSite ->
+            launch(bgDispatcher) {
+                homePageDataLoader.loadHomepage(selectedSite)?.pageId?.let { localHomepageId ->
+                    val landOnTheEditorAction = SiteNavigationAction.OpenHomepage(selectedSite, localHomepageId)
+                    _onNavigation.postValue(Event(landOnTheEditorAction))
+                }
+            }
         }
     }
 

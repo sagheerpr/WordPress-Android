@@ -272,6 +272,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
     public static final String EXTRA_IS_PAGE = "isPage";
     public static final String EXTRA_IS_PROMO = "isPromo";
     public static final String EXTRA_IS_QUICKPRESS = "isQuickPress";
+    public static final String EXTRA_IS_LANDING_EDITOR = "isLandingEditor";
     public static final String EXTRA_QUICKPRESS_BLOG_ID = "quickPressBlogId";
     public static final String EXTRA_UPLOAD_NOT_STARTED = "savedAsLocalDraft";
     public static final String EXTRA_HAS_FAILED_MEDIA = "hasFailedMedia";
@@ -348,6 +349,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
 
     private boolean mIsNewPost;
     private boolean mIsPage;
+    private boolean mIsLandingEditor;
     private boolean mHasSetPostContent;
     private PostLoadingState mPostLoadingState = PostLoadingState.NONE;
     @Nullable private Boolean mIsXPostsCapable = null;
@@ -495,6 +497,8 @@ public class EditPostActivity extends LocaleAwareActivity implements
         } else {
             mSite = (SiteModel) savedInstanceState.getSerializable(WordPress.SITE);
         }
+
+        mIsLandingEditor = getIntent().getExtras().getBoolean(EXTRA_IS_LANDING_EDITOR);
 
         // TODO: Make sure to use the latest fresh info about the site we've in the DB
         // set only the editor setting for now.
@@ -704,12 +708,22 @@ public class EditPostActivity extends LocaleAwareActivity implements
 
         setupPrepublishingBottomSheetRunnable();
 
+        setupLandingEditorUI();
+
         mStoriesEventListener.start(this.getLifecycle(), mSite, mEditPostRepository, this);
 
         // The check on savedInstanceState should allow to show the dialog only on first start
         // (even in cases when the VM could be re-created like when activity is destroyed in the background)
         mStorageUtilsViewModel.start(savedInstanceState == null);
     }
+
+    private void setupLandingEditorUI() {
+        if (!mIsLandingEditor) {
+            return;
+        }
+        // TODO: customize editor
+    }
+
 
     private void presentNewPageNoticeIfNeeded() {
         if (!mIsPage || !mIsNewPost) {
@@ -1936,6 +1950,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
         i.putExtra(EXTRA_UPLOAD_NOT_STARTED, uploadNotStarted);
         i.putExtra(EXTRA_HAS_FAILED_MEDIA, hasFailedMedia());
         i.putExtra(EXTRA_IS_PAGE, mIsPage);
+        i.putExtra(EXTRA_IS_LANDING_EDITOR, mIsLandingEditor);
         i.putExtra(EXTRA_HAS_CHANGES, saved);
         i.putExtra(EXTRA_POST_LOCAL_ID, mEditPostRepository.getId());
         i.putExtra(EXTRA_POST_REMOTE_ID, mEditPostRepository.getRemotePostId());

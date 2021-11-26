@@ -124,6 +124,7 @@ class MySiteViewModelTest : BaseUnitTest() {
     @Mock lateinit var quickStartCardBuilder: QuickStartCardBuilder
     @Mock lateinit var scanAndBackupSource: ScanAndBackupSource
     @Mock lateinit var currentAvatarSource: CurrentAvatarSource
+    @Mock lateinit var homePageDataLoader: HomePageDataLoader
     @Mock lateinit var dynamicCardsSource: DynamicCardsSource
     @Mock lateinit var unifiedCommentsListFeatureConfig: UnifiedCommentsListFeatureConfig
     @Mock lateinit var quickStartDynamicCardsFeatureConfig: QuickStartDynamicCardsFeatureConfig
@@ -252,6 +253,7 @@ class MySiteViewModelTest : BaseUnitTest() {
                 quickStartCardSource,
                 quickStartCardBuilder,
                 currentAvatarSource,
+                homePageDataLoader,
                 dynamicCardsSource,
                 unifiedCommentsListFeatureConfig,
                 quickStartDynamicCardsFeatureConfig,
