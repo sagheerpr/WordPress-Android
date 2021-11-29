@@ -99,6 +99,7 @@ import org.wordpress.android.util.analytics.AnalyticsTrackerWrapper
 import org.wordpress.android.util.config.MySiteDashboardPhase2FeatureConfig
 import org.wordpress.android.util.config.QuickStartDynamicCardsFeatureConfig
 import org.wordpress.android.util.config.UnifiedCommentsListFeatureConfig
+import org.wordpress.android.util.experiments.LandOnTheEditorABExperiment
 import org.wordpress.android.viewmodel.ContextProvider
 
 private const val DYNAMIC_CARDS_BUILDER_MORE_CLICK_PARAM_POSITION = 3
@@ -137,6 +138,7 @@ class MySiteViewModelTest : BaseUnitTest() {
     @Mock lateinit var siteIconProgressSource: SiteIconProgressSource
     @Mock lateinit var selectedSiteSource: SelectedSiteSource
     @Mock lateinit var mySiteDashboardPhase2FeatureConfig: MySiteDashboardPhase2FeatureConfig
+    @Mock lateinit var landOnTheEditorABExperiment: LandOnTheEditorABExperiment
     private lateinit var viewModel: MySiteViewModel
     private lateinit var uiModels: MutableList<UiModel>
     private lateinit var snackbars: MutableList<SnackbarMessageHolder>
@@ -262,6 +264,7 @@ class MySiteViewModelTest : BaseUnitTest() {
                 cardsBuilder,
                 dynamicCardsBuilder,
                 postCardsSource,
+                landOnTheEditorABExperiment,
                 selectedSiteSource,
                 siteIconProgressSource,
                 mySiteDashboardPhase2FeatureConfig

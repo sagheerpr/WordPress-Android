@@ -16,6 +16,7 @@ import org.wordpress.android.analytics.AnalyticsTracker.Stat
 import org.wordpress.android.fluxc.model.DynamicCardType
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.experiments.Variation.Control
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.QuickStartStore.QuickStartTask
 import org.wordpress.android.fluxc.store.QuickStartStore.QuickStartTaskType
@@ -74,6 +75,7 @@ import org.wordpress.android.util.analytics.AnalyticsTrackerWrapper
 import org.wordpress.android.util.config.MySiteDashboardPhase2FeatureConfig
 import org.wordpress.android.util.config.QuickStartDynamicCardsFeatureConfig
 import org.wordpress.android.util.config.UnifiedCommentsListFeatureConfig
+import org.wordpress.android.util.experiments.LandOnTheEditorABExperiment
 import org.wordpress.android.util.filter
 import org.wordpress.android.util.getEmailValidationMessage
 import org.wordpress.android.util.map
@@ -116,6 +118,7 @@ class MySiteViewModel @Inject constructor(
     private val cardsBuilder: CardsBuilder,
     private val dynamicCardsBuilder: DynamicCardsBuilder,
     private val postCardsSource: PostCardsSource,
+    private val landOnTheEditorABExperiment: LandOnTheEditorABExperiment,
     selectedSiteSource: SelectedSiteSource,
     siteIconProgressSource: SiteIconProgressSource,
     mySiteDashboardPhase2FeatureConfig: MySiteDashboardPhase2FeatureConfig
@@ -682,6 +685,9 @@ class MySiteViewModel @Inject constructor(
     }
 
     fun checkAndStartLandOnTheEditor() {
+        if (landOnTheEditorABExperiment.getVariation() is Control) {
+            return
+        }
         selectedSiteRepository.getSelectedSite()?.let { selectedSite ->
             launch(bgDispatcher) {
                 homePageDataLoader.loadHomepage(selectedSite)?.pageId?.let { localHomepageId ->
