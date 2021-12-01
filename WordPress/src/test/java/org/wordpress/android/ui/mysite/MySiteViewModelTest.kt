@@ -1332,6 +1332,7 @@ class MySiteViewModelTest : BaseUnitTest() {
 
         viewModel.checkAndStartLandOnTheEditor()
 
+        verify(analyticsTrackerWrapper).track(Stat.LANDING_EDITOR_SHOWN)
         assertThat(navigationActions).containsExactly(SiteNavigationAction.OpenHomepage(site, localHomepageId))
     }
 
