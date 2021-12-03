@@ -36,9 +36,12 @@ import org.wordpress.android.fluxc.model.experiments.Variation.Control
 import org.wordpress.android.fluxc.model.experiments.Variation.Treatment
 import org.wordpress.android.fluxc.model.page.PageModel
 import org.wordpress.android.fluxc.model.page.PageStatus.PUBLISHED
+import org.wordpress.android.fluxc.model.dashboard.CardModel.PostsCardModel
+import org.wordpress.android.fluxc.model.dashboard.CardModel.PostsCardModel.PostCardModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.QuickStartStore.QuickStartTask
 import org.wordpress.android.fluxc.store.QuickStartStore.QuickStartTaskType
+import org.wordpress.android.fluxc.store.dashboard.CardsStore.CardsResult
 import org.wordpress.android.test
 import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.DomainRegistrationCard
 import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.PostCard.FooterLink
@@ -57,11 +60,11 @@ import org.wordpress.android.ui.mysite.MySiteCardAndItemBuilderParams.QuickActio
 import org.wordpress.android.ui.mysite.MySiteCardAndItemBuilderParams.QuickStartCardBuilderParams
 import org.wordpress.android.ui.mysite.MySiteCardAndItemBuilderParams.SiteInfoCardBuilderParams
 import org.wordpress.android.ui.mysite.MySiteCardAndItemBuilderParams.SiteItemsBuilderParams
+import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.CardsUpdate
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.CurrentAvatarUrl
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.DomainCreditAvailable
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.DynamicCardsUpdate
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.JetpackCapabilities
-import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.PostsUpdate
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.QuickStartUpdate
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.SelectedSite
 import org.wordpress.android.ui.mysite.MySiteUiState.PartialState.ShowSiteIconProgressBar
@@ -73,10 +76,7 @@ import org.wordpress.android.ui.mysite.SiteDialogModel.AddSiteIconDialogModel
 import org.wordpress.android.ui.mysite.SiteDialogModel.ChangeSiteIconDialogModel
 import org.wordpress.android.ui.mysite.SiteDialogModel.ShowRemoveNextStepsDialog
 import org.wordpress.android.ui.mysite.cards.CardsBuilder
-import org.wordpress.android.ui.mysite.cards.post.PostCardType
-import org.wordpress.android.ui.mysite.cards.post.mockdata.MockedPostsData
-import org.wordpress.android.ui.mysite.cards.post.mockdata.MockedPostsData.Post
-import org.wordpress.android.ui.mysite.cards.post.mockdata.MockedPostsData.Posts
+import org.wordpress.android.ui.mysite.cards.dashboard.posts.PostCardType
 import org.wordpress.android.ui.mysite.cards.quickstart.QuickStartCardBuilder
 import org.wordpress.android.ui.mysite.cards.quickstart.QuickStartRepository
 import org.wordpress.android.ui.mysite.cards.quickstart.QuickStartRepository.QuickStartCategory
@@ -191,13 +191,32 @@ class MySiteViewModelTest : BaseUnitTest() {
                 uncompletedTasks = listOf(QuickStartTaskDetails.UPDATE_SITE_TITLE),
                 completedTasks = emptyList()
         )
-    private val postsUpdate = MutableLiveData(
-            PostsUpdate(
-                    MockedPostsData(
-                            posts = Posts(
-                                    hasPublishedPosts = true,
-                                    draft = listOf(Post(id = 1, title = "")),
-                                    scheduled = listOf(Post(id = 1, title = ""))
+
+    private val cardsUpdate = MutableLiveData(
+            CardsUpdate(
+                    CardsResult(
+                            listOf(
+                                    PostsCardModel(
+                                            hasPublished = true,
+                                            draft = listOf(
+                                                    PostCardModel(
+                                                            id = 1,
+                                                            title = "draft",
+                                                            content = "content",
+                                                            featuredImage = "featuredImage",
+                                                            date = Date()
+                                                    )
+                                            ),
+                                            scheduled = listOf(
+                                                    PostCardModel(
+                                                            id = 2,
+                                                            title = "scheduled",
+                                                            content = "",
+                                                            featuredImage = null,
+                                                            date = Date()
+                                                    )
+                                            )
+                                    )
                             )
                     )
             )
@@ -213,7 +232,7 @@ class MySiteViewModelTest : BaseUnitTest() {
             jetpackCapabilities,
             currentAvatar,
             dynamicCards,
-            postsUpdate,
+            cardsUpdate,
             quickStartUpdate,
             showSiteIconProgressBar,
             selectedSite
