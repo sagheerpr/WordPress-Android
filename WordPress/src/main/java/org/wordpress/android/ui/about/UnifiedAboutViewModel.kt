@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.automattic.about.model.AboutConfig
+import com.automattic.about.model.AnalyticsConfig
 import com.automattic.about.model.HeaderConfig
+import com.automattic.about.model.ItemConfig
 import com.automattic.about.model.LegalConfig
 import com.automattic.about.model.RateUsConfig
 import com.automattic.about.model.ShareConfig
@@ -17,6 +19,7 @@ import org.wordpress.android.models.recommend.RecommendApiCallsProvider.Recommen
 import org.wordpress.android.models.recommend.RecommendApiCallsProvider.RecommendCallResult.Failure
 import org.wordpress.android.models.recommend.RecommendApiCallsProvider.RecommendCallResult.Success
 import org.wordpress.android.ui.about.UnifiedAboutNavigationAction.Dismiss
+import org.wordpress.android.ui.about.UnifiedAboutNavigationAction.OpenBlog
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.BuildConfigWrapper
@@ -30,7 +33,8 @@ class UnifiedAboutViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val wpUrlUtils: WpUrlUtilsWrapper,
     private val recommendApiCallsProvider: RecommendApiCallsProvider,
-    private val buildConfig: BuildConfigWrapper
+    private val buildConfig: BuildConfigWrapper,
+    private val unifiedAboutTracker: UnifiedAboutTracker
 ) : ViewModel() {
     private val _onNavigation = MutableLiveData<Event<UnifiedAboutNavigationAction>>()
     val onNavigation: LiveData<Event<UnifiedAboutNavigationAction>> = _onNavigation
@@ -42,12 +46,24 @@ class UnifiedAboutViewModel @Inject constructor(
             socialsConfig = SocialsConfig(
                     twitterUsername = WP_SOCIAL_HANDLE
             ),
+            customItems = listOf(
+                    ItemConfig(
+                            name = BLOG_ITEM_NAME,
+                            title = contextProvider.getContext().getString(R.string.about_blog),
+                            onClick = ::onBlogClick
+                    )
+            ),
             legalConfig = LegalConfig(
                     tosUrl = wpUrlUtils.buildTermsOfServiceUrl(contextProvider.getContext()),
                     privacyPolicyUrl = Constants.URL_PRIVACY_POLICY,
                     acknowledgementsUrl = WP_ACKNOWLEDGEMENTS_URL
             ),
-            onDismiss = ::onDismiss
+            onDismiss = ::onDismiss,
+            analyticsTracker = AnalyticsConfig(
+                    trackScreenShown = unifiedAboutTracker::trackScreenShown,
+                    trackScreenDismissed = unifiedAboutTracker::trackScreenDismissed,
+                    trackButtonTapped = unifiedAboutTracker::trackButtonTapped
+            )
     )
 
     private suspend fun createShareConfig(): ShareConfig {
@@ -69,9 +85,15 @@ class UnifiedAboutViewModel @Inject constructor(
         _onNavigation.postValue(Event(Dismiss))
     }
 
+    private fun onBlogClick() {
+        _onNavigation.postValue(Event(OpenBlog(WP_BLOG_URL)))
+    }
+
     companion object {
         private const val WP_SOCIAL_HANDLE = "wordpress"
         private const val WP_ACKNOWLEDGEMENTS_URL = "file:///android_asset/licenses.html"
         private const val WP_APPS_URL = "https://apps.wordpress.com/"
+        private const val WP_BLOG_URL = "https://blog.wordpress.com/"
+        private const val BLOG_ITEM_NAME = "blog"
     }
 }
