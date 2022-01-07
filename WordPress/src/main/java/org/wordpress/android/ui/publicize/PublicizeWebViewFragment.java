@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.models.PublicizeConnection;
 import org.wordpress.android.models.PublicizeService;
+import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.ScrollableViewInitializedListener;
 import org.wordpress.android.ui.WPWebViewActivity;
 import org.wordpress.android.ui.publicize.PublicizeConstants.ConnectAction;
@@ -158,11 +159,30 @@ public class PublicizeWebViewFragment extends PublicizeBaseFragment {
         mWebView.postUrl(WPWebViewActivity.WPCOM_LOGIN_URL, postData.getBytes());
     }
 
+    public void loadUrl(String url) {
+        mWebView.loadUrl(url);
+    }
+
     // ********************************************************************************************
 
     private class PublicizeWebViewClient extends WebViewClient {
         PublicizeWebViewClient() {
             super();
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            super.shouldOverrideUrlLoading(view, url);
+
+            if (isAdded() && url != null) {
+                Uri uri = Uri.parse(url);
+                if (uri.getHost().contains("facebook.com")) {
+                    ActivityLauncher.openUrlExternal(requireContext(), url);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         @Override

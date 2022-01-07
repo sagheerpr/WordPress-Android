@@ -587,7 +587,19 @@
             android:name=".ui.publicize.PublicizeListActivity"
             android:label="@string/sharing"
             android:launchMode="singleTop"
-            android:theme="@style/WordPress.NoActionBar"/>
+            android:theme="@style/WordPress.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="public-api.wordpress.com"
+                    android:pathPattern="/connect/.*"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.ShareIntentReceiverActivity"

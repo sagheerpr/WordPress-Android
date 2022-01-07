@@ -1,6 +1,8 @@
 package org.wordpress.android.ui.publicize;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -89,6 +91,19 @@ public class PublicizeListActivity extends LocaleAwareActivity
     protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(WordPress.SITE, mSite);
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Uri uri = intent.getData();
+        if (uri != null && uri.toString().contains("connect")) {
+            String tag = getString(R.string.fragment_tag_publicize_webview);
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+            if (fragment instanceof PublicizeWebViewFragment) {
+                PublicizeWebViewFragment webViewFragment = (PublicizeWebViewFragment) fragment;
+                webViewFragment.loadUrl(uri.toString());
+            }
+        }
     }
 
     @Override
